@@ -3,8 +3,6 @@ package spark;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class Base64Test {
 
     //CS304 manually Issue link:https://github.com/perwendel/spark/issues/1061
