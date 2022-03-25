@@ -26,7 +26,6 @@ import spark.routematch.RouteMatch;
 import spark.util.SparkTestUtil;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static spark.Service.ignite;
 
 /**
