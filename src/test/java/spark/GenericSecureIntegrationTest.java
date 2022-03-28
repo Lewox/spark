@@ -2,17 +2,18 @@ package spark;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.get;
@@ -26,12 +27,12 @@ public class GenericSecureIntegrationTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericSecureIntegrationTest.class);
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() {
         Spark.stop();
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         testUtil = new SparkTestUtil(4567);
 
@@ -41,9 +42,7 @@ public class GenericSecureIntegrationTest {
         Spark.secure(SparkTestUtil.getKeyStoreLocation(),
                      SparkTestUtil.getKeystorePassword(), null, null);
 
-        before("/protected/*", (request, response) -> {
-            halt(401, "Go Away!");
-        });
+        before("/protected/*", (request, response) -> halt(401, "Go Away!"));
 
         get("/hi", (request, response) -> "Hello World!");
 
@@ -67,9 +66,7 @@ public class GenericSecureIntegrationTest {
             return "Body was: " + body;
         });
 
-        after("/hi", (request, response) -> {
-            response.header("after", "foobar");
-        });
+        after("/hi", (request, response) -> response.header("after", "foobar"));
 
         Spark.awaitInitialization();
     }
@@ -77,8 +74,8 @@ public class GenericSecureIntegrationTest {
     @Test
     public void testGetHi() throws Exception {
         SparkTestUtil.UrlResponse response = testUtil.doMethodSecure("GET", "/hi", null);
-        Assert.assertEquals(200, response.status);
-        Assert.assertEquals("Hello World!", response.body);
+        assertEquals(200, response.status);
+        assertEquals("Hello World!", response.body);
     }
 
     @Test
@@ -88,79 +85,79 @@ public class GenericSecureIntegrationTest {
         headers.put("X-Forwarded-For", xForwardedFor);
 
         UrlResponse response = testUtil.doMethod("GET", "/ip", null, true, "text/html", headers);
-        Assert.assertEquals(xForwardedFor, response.body);
+        assertEquals(xForwardedFor, response.body);
 
         response = testUtil.doMethod("GET", "/ip", null, true, "text/html", null);
-        Assert.assertNotEquals(xForwardedFor, response.body);
+        assertNotEquals(xForwardedFor, response.body);
     }
 
 
     @Test
     public void testHiHead() throws Exception {
         UrlResponse response = testUtil.doMethodSecure("HEAD", "/hi", null);
-        Assert.assertEquals(200, response.status);
-        Assert.assertEquals("", response.body);
+        assertEquals(200, response.status);
+        assertEquals("", response.body);
     }
 
     @Test
     public void testGetHiAfterFilter() throws Exception {
         UrlResponse response = testUtil.doMethodSecure("GET", "/hi", null);
-        Assert.assertTrue(response.headers.get("after").contains("foobar"));
+        assertTrue(response.headers.get("after").contains("foobar"));
     }
 
     @Test
     public void testGetRoot() throws Exception {
         UrlResponse response = testUtil.doMethodSecure("GET", "/", null);
-        Assert.assertEquals(200, response.status);
-        Assert.assertEquals("Hello Root!", response.body);
+        assertEquals(200, response.status);
+        assertEquals("Hello Root!", response.body);
     }
 
     @Test
     public void testEchoParam1() throws Exception {
         UrlResponse response = testUtil.doMethodSecure("GET", "/shizzy", null);
-        Assert.assertEquals(200, response.status);
-        Assert.assertEquals("echo: shizzy", response.body);
+        assertEquals(200, response.status);
+        assertEquals("echo: shizzy", response.body);
     }
 
     @Test
     public void testEchoParam2() throws Exception {
         UrlResponse response = testUtil.doMethodSecure("GET", "/gunit", null);
-        Assert.assertEquals(200, response.status);
-        Assert.assertEquals("echo: gunit", response.body);
+        assertEquals(200, response.status);
+        assertEquals("echo: gunit", response.body);
     }
 
     @Test
     public void testEchoParamWithMaj() throws Exception {
         UrlResponse response = testUtil.doMethodSecure("GET", "/paramwithmaj/plop", null);
-        Assert.assertEquals(200, response.status);
-        Assert.assertEquals("echo: plop", response.body);
+        assertEquals(200, response.status);
+        assertEquals("echo: plop", response.body);
     }
 
     @Test
     public void testUnauthorized() throws Exception {
         UrlResponse urlResponse = testUtil.doMethodSecure("GET", "/protected/resource", null);
-        Assert.assertTrue(urlResponse.status == 401);
+        assertEquals(401, urlResponse.status);
     }
 
     @Test
     public void testNotFound() throws Exception {
         UrlResponse urlResponse = testUtil.doMethodSecure("GET", "/no/resource", null);
-        Assert.assertTrue(urlResponse.status == 404);
+        assertEquals(404, urlResponse.status);
     }
 
     @Test
     public void testPost() throws Exception {
         UrlResponse response = testUtil.doMethodSecure("POST", "/poster", "Fo shizzy");
         LOGGER.info(response.body);
-        Assert.assertEquals(201, response.status);
-        Assert.assertTrue(response.body.contains("Fo shizzy"));
+        assertEquals(201, response.status);
+        assertTrue(response.body.contains("Fo shizzy"));
     }
 
     @Test
     public void testPatch() throws Exception {
         UrlResponse response = testUtil.doMethodSecure("PATCH", "/patcher", "Fo shizzy");
         LOGGER.info(response.body);
-        Assert.assertEquals(200, response.status);
-        Assert.assertTrue(response.body.contains("Fo shizzy"));
+        assertEquals(200, response.status);
+        assertTrue(response.body.contains("Fo shizzy"));
     }
 }

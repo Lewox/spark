@@ -5,14 +5,12 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.Test;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.reflect.Whitebox;
+import org.junit.jupiter.api.Test;
 import spark.ssl.SslStores;
 
-import java.util.Map;
-
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class SocketConnectorFactoryTest {
 
@@ -50,13 +48,13 @@ public class SocketConnectorFactoryTest {
         Server server = new Server();
         ServerConnector serverConnector = SocketConnectorFactory.createSocketConnector(server, "localhost", 8888, true);
 
-        String internalHost = Whitebox.getInternalState(serverConnector, "_host");
-        int internalPort = Whitebox.getInternalState(serverConnector, "_port");
-        Server internalServerConnector = Whitebox.getInternalState(serverConnector, "_server");
+        String internalHost = serverConnector.getHost();
+        int internalPort = serverConnector.getPort();
+        Server internalServerConnector = serverConnector.getServer();
 
-        assertEquals("Server Connector Host should be set to the specified server", host, internalHost);
-        assertEquals("Server Connector Port should be set to the specified port", port, internalPort);
-        assertEquals("Server Connector Server should be set to the specified server", internalServerConnector, server);
+        assertEquals(host, internalHost, "Server Connector Host should be set to the specified server");
+        assertEquals(port, internalPort, "Server Connector Port should be set to the specified port");
+        assertEquals(internalServerConnector, server, "Server Connector Server should be set to the specified server");
     }
 
     @Test
@@ -96,9 +94,7 @@ public class SocketConnectorFactoryTest {
         }
     }
 
-
     @Test
-    @PrepareForTest({ServerConnector.class})
     public void testCreateSecureSocketConnector() throws  Exception {
 
         final String host = "localhost";
@@ -115,25 +111,22 @@ public class SocketConnectorFactoryTest {
 
         ServerConnector serverConnector = SocketConnectorFactory.createSecureSocketConnector(server, host, port, sslStores, true);
 
-        String internalHost = Whitebox.getInternalState(serverConnector, "_host");
-        int internalPort = Whitebox.getInternalState(serverConnector, "_port");
+        String internalHost = serverConnector.getHost();
+        int internalPort = serverConnector.getPort();
 
-        assertEquals("Server Connector Host should be set to the specified server", host, internalHost);
-        assertEquals("Server Connector Port should be set to the specified port", port, internalPort);
+        assertEquals(host, internalHost, "Server Connector Host should be set to the specified server");
+        assertEquals(port, internalPort, "Server Connector Port should be set to the specified port");
 
-        Map<String, ConnectionFactory> factories = Whitebox.getInternalState(serverConnector, "_factories");
+        ConnectionFactory factory = serverConnector.getConnectionFactory("ssl");
+        
+        assertNotNull(factory, "Should return true because factory for SSL should have been set");
 
-        assertTrue("Should return true because factory for SSL should have been set",
-                factories.containsKey("ssl") && factories.get("ssl") != null);
-
-        SslConnectionFactory sslConnectionFactory = (SslConnectionFactory) factories.get("ssl");
+        SslConnectionFactory sslConnectionFactory = (SslConnectionFactory) factory;
         SslContextFactory sslContextFactory = sslConnectionFactory.getSslContextFactory();
 
-        assertEquals("Should return the Keystore file specified", keystoreFile,
-                sslContextFactory.getKeyStoreResource().getFile().getName());
+        assertEquals(keystoreFile, sslContextFactory.getKeyStoreResource().getFile().getName(), "Should return the Keystore file specified");
 
-        assertEquals("Should return the Truststore file specified", truststoreFile,
-                sslContextFactory.getTrustStoreResource().getFile().getName());
+        assertEquals(truststoreFile, sslContextFactory.getTrustStoreResource().getFile().getName(), "Should return the Truststore file specified");
 
     }
 

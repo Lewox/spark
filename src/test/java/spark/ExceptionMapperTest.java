@@ -1,12 +1,11 @@
 package spark;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
 
-import static org.junit.Assert.assertEquals;
-
 public class ExceptionMapperTest {
-
 
     @Test
     public void testGetInstance_whenDefaultInstanceIsNull() {
@@ -16,7 +15,7 @@ public class ExceptionMapperTest {
 
         //then
         exceptionMapper = ExceptionMapper.getServletInstance();
-        assertEquals("Should be equals because ExceptionMapper is a singleton", Whitebox.getInternalState(ExceptionMapper.class, "servletInstance"), exceptionMapper);
+        assertEquals(Whitebox.getInternalState(ExceptionMapper.class, "servletInstance"), exceptionMapper, "Should be equals because ExceptionMapper is a singleton");
     }
 
     @Test
@@ -26,6 +25,6 @@ public class ExceptionMapperTest {
 
         //then
         ExceptionMapper exceptionMapper = ExceptionMapper.getServletInstance();
-        assertEquals("Should be equals because ExceptionMapper is a singleton", Whitebox.getInternalState(ExceptionMapper.class, "servletInstance"), exceptionMapper);
+        assertEquals(Whitebox.getInternalState(ExceptionMapper.class, "servletInstance"), exceptionMapper, "Should be equals because ExceptionMapper is a singleton");
     }
 }

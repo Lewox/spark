@@ -17,17 +17,17 @@ public class WebSocketTestHandler {
 
     @OnWebSocketConnect
     public void connected(Session session) {
-	events.add("onConnect");
+        events.add("onConnect");
     }
 
     @OnWebSocketClose
     public void closed(int statusCode, String reason) {
-	events.add(String.format("onClose: %s %s", statusCode, reason));
+        events.add(String.format("onClose: %s %s", statusCode, reason));
     }
 
     @OnWebSocketMessage
     public void message(String message) {
-	events.add("onMessage: " + message);
+        events.add("onMessage: " + message);
     }
 
 }

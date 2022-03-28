@@ -1,18 +1,17 @@
 package spark;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class QueryParamsMapTest {
 
-    QueryParamsMap queryMap = new QueryParamsMap();
+    private final QueryParamsMap queryMap = new QueryParamsMap();
     
     @Test
     public void constructorWithParametersMap() {
@@ -55,11 +54,11 @@ public class QueryParamsMapTest {
         queryMap.loadKeys("user[age]",new String[] {"10"});
         queryMap.loadKeys("user[agrees]",new String[] {"true"});
 
-        assertEquals(new Integer(10),queryMap.get("user").get("age").integerValue());
-        assertEquals(new Float(10),queryMap.get("user").get("age").floatValue());
-        assertEquals(new Double(10),queryMap.get("user").get("age").doubleValue());
-        assertEquals(new Long(10),queryMap.get("user").get("age").longValue());
-        assertEquals(Boolean.TRUE,queryMap.get("user").get("agrees").booleanValue());
+        assertEquals(Integer.valueOf(10), queryMap.get("user").get("age").integerValue());
+        assertEquals(Float.valueOf(10.0F), queryMap.get("user").get("age").floatValue());
+        assertEquals(Double.valueOf(10.0D), queryMap.get("user").get("age").doubleValue());
+        assertEquals(Long.valueOf(10), queryMap.get("user").get("age").longValue());
+        assertEquals(Boolean.TRUE, queryMap.get("user").get("agrees").booleanValue());
     }
     
     @Test
@@ -72,9 +71,7 @@ public class QueryParamsMapTest {
     
     @Test
     public void parseKeyShouldParseSubkeys() {
-        String[] parsed = null;
-        
-        parsed = queryMap.parseKey("[name][more]");
+        String[] parsed = queryMap.parseKey("[name][more]");
         
         assertEquals("name",parsed[0]);
         assertEquals("[more]",parsed[1]);

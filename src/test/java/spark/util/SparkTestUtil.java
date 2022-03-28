@@ -43,7 +43,7 @@ import org.apache.http.util.EntityUtils;
 
 public class SparkTestUtil {
 
-    private int port;
+    private final int port;
 
     private HttpClient httpClient;
 
@@ -67,6 +67,7 @@ public class SparkTestUtil {
     public void setFollowRedirectStrategy(Integer... codes) {
         final List<Integer> redirectCodes = Arrays.asList(codes);
         DefaultRedirectStrategy redirectStrategy = new DefaultRedirectStrategy() {
+            @Override
             public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) {
                 boolean isRedirect = false;
                 try {
@@ -238,7 +239,7 @@ public class SparkTestUtil {
      * keystore specified in JVM params
      */
     private SSLSocketFactory getSslFactory() {
-        KeyStore keyStore = null;
+        KeyStore keyStore;
         try {
             keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             FileInputStream fis = new FileInputStream(getTrustStoreLocation());
@@ -309,7 +310,7 @@ public class SparkTestUtil {
     public static void sleep(long time) {
         try {
             Thread.sleep(time);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 

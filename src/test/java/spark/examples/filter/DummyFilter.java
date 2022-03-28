@@ -22,19 +22,13 @@ import org.slf4j.LoggerFactory;
 import static spark.Spark.after;
 import static spark.Spark.before;
 
-
 public class DummyFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DummyFilter.class);
 
     public static void main(String[] args) {
-        before((request, response) -> {
-            LOGGER.info("Before");
-        });
+        before((request, response) -> LOGGER.info("Before"));
 
-        after((request, response) -> {
-            LOGGER.info("After");
-        });
+        after((request, response) -> LOGGER.info("After"));
     }
-
 }

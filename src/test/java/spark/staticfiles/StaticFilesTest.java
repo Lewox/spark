@@ -20,11 +20,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URLEncoder;
-
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +30,8 @@ import spark.Spark;
 import spark.examples.exception.NotFoundException;
 import spark.util.SparkTestUtil;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spark.Spark.exception;
 import static spark.Spark.get;
 import static spark.Spark.staticFiles;
@@ -54,7 +54,7 @@ public class StaticFilesTest {
 
     private static File tmpExternalFile;
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() {
         Spark.stop();
         if (tmpExternalFile != null) {
@@ -63,7 +63,7 @@ public class StaticFilesTest {
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws IOException {
         testUtil = new SparkTestUtil(4567);
 
@@ -93,28 +93,28 @@ public class StaticFilesTest {
 
     @Test
     public void testMimeTypes() throws Exception {
-        Assert.assertEquals("text/html", doGet("/pages/index.html").headers.get("Content-Type"));
-        Assert.assertEquals("application/javascript", doGet("/js/scripts.js").headers.get("Content-Type"));
-        Assert.assertEquals("text/css", doGet("/css/style.css").headers.get("Content-Type"));
-        Assert.assertEquals("image/png", doGet("/img/sparklogo.png").headers.get("Content-Type"));
-        Assert.assertEquals("image/svg+xml", doGet("/img/sparklogo.svg").headers.get("Content-Type"));
-        Assert.assertEquals("application/octet-stream", doGet("/img/sparklogoPng").headers.get("Content-Type"));
-        Assert.assertEquals("application/octet-stream", doGet("/img/sparklogoSvg").headers.get("Content-Type"));
-        Assert.assertEquals("text/html", doGet("/externalFile.html").headers.get("Content-Type"));
+        assertEquals("text/html", doGet("/pages/index.html").headers.get("Content-Type"));
+        assertEquals("application/javascript", doGet("/js/scripts.js").headers.get("Content-Type"));
+        assertEquals("text/css", doGet("/css/style.css").headers.get("Content-Type"));
+        assertEquals("image/png", doGet("/img/sparklogo.png").headers.get("Content-Type"));
+        assertEquals("image/svg+xml", doGet("/img/sparklogo.svg").headers.get("Content-Type"));
+        assertEquals("application/octet-stream", doGet("/img/sparklogoPng").headers.get("Content-Type"));
+        assertEquals("application/octet-stream", doGet("/img/sparklogoSvg").headers.get("Content-Type"));
+        assertEquals("text/html", doGet("/externalFile.html").headers.get("Content-Type"));
     }
 
     @Test
     public void testCustomMimeType() throws Exception {
         staticFiles.registerMimeType("cxt", "custom-extension-type");
-        Assert.assertEquals("custom-extension-type", doGet("/img/file.cxt").headers.get("Content-Type"));
+        assertEquals("custom-extension-type", doGet("/img/file.cxt").headers.get("Content-Type"));
     }
 
     @Test
     public void testStaticFileCssStyleCss() throws Exception {
         SparkTestUtil.UrlResponse response = doGet("/css/style.css");
-        Assert.assertEquals(200, response.status);
-        Assert.assertEquals("text/css", response.headers.get("Content-Type"));
-        Assert.assertEquals("Content of css file", response.body);
+        assertEquals(200, response.status);
+        assertEquals("text/css", response.headers.get("Content-Type"));
+        assertEquals("Content of css file", response.body);
 
         testGet();
     }
@@ -122,8 +122,8 @@ public class StaticFilesTest {
     @Test
     public void testStaticFilePagesIndexHtml() throws Exception {
         SparkTestUtil.UrlResponse response = doGet("/pages/index.html");
-        Assert.assertEquals(200, response.status);
-        Assert.assertEquals("<html><body>Hello Static World!</body></html>", response.body);
+        assertEquals(200, response.status);
+        assertEquals("<html><body>Hello Static World!</body></html>", response.body);
 
         testGet();
     }
@@ -131,8 +131,8 @@ public class StaticFilesTest {
     @Test
     public void testStaticFilePageHtml() throws Exception {
         SparkTestUtil.UrlResponse response = doGet("/page.html");
-        Assert.assertEquals(200, response.status);
-        Assert.assertEquals("<html><body>Hello Static Files World!</body></html>", response.body);
+        assertEquals(200, response.status);
+        assertEquals("<html><body>Hello Static Files World!</body></html>", response.body);
 
         testGet();
     }
@@ -142,7 +142,7 @@ public class StaticFilesTest {
         String path = "/" + URLEncoder.encode("..\\spark\\", "UTF-8") + "Spark.class";
         SparkTestUtil.UrlResponse response = doGet(path);
 
-        Assert.assertEquals(400, response.status);
+        assertEquals(400, response.status);
 
         testGet();
     }
@@ -150,8 +150,8 @@ public class StaticFilesTest {
     @Test
     public void testExternalStaticFile() throws Exception {
         SparkTestUtil.UrlResponse response = doGet("/externalFile.html");
-        Assert.assertEquals(200, response.status);
-        Assert.assertEquals(CONTENT_OF_EXTERNAL_FILE, response.body);
+        assertEquals(200, response.status);
+        assertEquals(CONTENT_OF_EXTERNAL_FILE, response.body);
 
         testGet();
     }
@@ -162,16 +162,16 @@ public class StaticFilesTest {
     private static void testGet() throws Exception {
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/hello", "");
 
-        Assert.assertEquals(200, response.status);
-        Assert.assertTrue(response.body.contains(FO_SHIZZY));
+        assertEquals(200, response.status);
+        assertTrue(response.body.contains(FO_SHIZZY));
     }
 
     @Test
     public void testExceptionMapping404() throws Exception {
         SparkTestUtil.UrlResponse response = doGet("/filethatdoesntexist.html");
 
-        Assert.assertEquals(404, response.status);
-        Assert.assertEquals(NOT_FOUND_BRO, response.body);
+        assertEquals(404, response.status);
+        assertEquals(NOT_FOUND_BRO, response.body);
     }
 
     private SparkTestUtil.UrlResponse doGet(String fileName) throws Exception {

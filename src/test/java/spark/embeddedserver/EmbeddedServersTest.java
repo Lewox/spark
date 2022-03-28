@@ -5,31 +5,25 @@ import java.io.File;
 import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.ThreadPool;
-import org.junit.AfterClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import spark.Spark;
 import spark.embeddedserver.jetty.EmbeddedJettyFactory;
 import spark.embeddedserver.jetty.JettyServerFactory;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class EmbeddedServersTest {
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
     @Test
-    public void testAddAndCreate_whenCreate_createsCustomServer() throws Exception {
+    public void testAddAndCreate_whenCreate_createsCustomServer(@TempDir File requestLogDir) throws Exception {
         // Create custom Server
         Server server = new Server();
-        File requestLogDir = temporaryFolder.newFolder();
         File requestLogFile = new File(requestLogDir, "request.log");
         server.setRequestLog(new NCSARequestLog(requestLogFile.getAbsolutePath()));
         JettyServerFactory serverFactory = mock(JettyServerFactory.class);
@@ -51,8 +45,7 @@ public class EmbeddedServersTest {
     }
 
     @Test
-    public void testAdd_whenConfigureRoutes_createsCustomServer() throws Exception {
-        File requestLogDir = temporaryFolder.newFolder();
+    public void testAdd_whenConfigureRoutes_createsCustomServer(@TempDir File requestLogDir) {
         File requestLogFile = new File(requestLogDir, "request.log");
         // Register custom server
         EmbeddedServers.add(EmbeddedServers.Identifiers.JETTY, new EmbeddedJettyFactory(new JettyServerFactory() {
@@ -74,7 +67,7 @@ public class EmbeddedServersTest {
         assertTrue(requestLogFile.exists());
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() {
         Spark.stop();
     }

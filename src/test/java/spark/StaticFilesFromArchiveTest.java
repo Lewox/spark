@@ -18,16 +18,14 @@ package spark;
 
 import static java.lang.ClassLoader.getSystemClassLoader;
 import static java.lang.System.arraycopy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
@@ -37,7 +35,7 @@ public class StaticFilesFromArchiveTest {
     private static ClassLoader classLoader;
     private static ClassLoader initialClassLoader;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         setupClassLoader();
         testUtil = new SparkTestUtil(4567);
@@ -54,12 +52,12 @@ public class StaticFilesFromArchiveTest {
         awaitInitializationMethod.invoke(null);
     }
 
-    @AfterClass
+    @AfterAll
     public static void resetClassLoader() {
         Thread.currentThread().setContextClassLoader(initialClassLoader);
     }
 
-    private static void setupClassLoader() throws Exception {
+    private static void setupClassLoader() {
         ClassLoader extendedClassLoader = createExtendedClassLoader();
         initialClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(extendedClassLoader);
