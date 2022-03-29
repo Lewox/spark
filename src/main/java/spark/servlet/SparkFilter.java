@@ -102,7 +102,7 @@ public class SparkFilter implements Filter {
     protected SparkApplication getApplication(String applicationClassName) throws ServletException {
         try {
             Class<?> applicationClass = Class.forName(applicationClassName);
-            return (SparkApplication) applicationClass.newInstance();
+            return (SparkApplication) applicationClass.getDeclaredConstructor().newInstance();
         } catch (Exception exc) {
             throw new ServletException(exc);
         }
@@ -125,7 +125,7 @@ public class SparkFilter implements Filter {
         if (StringUtils.isNotBlank(applications)) {
             final String[] sparkApplications = applications.split(",");
 
-            if (sparkApplications != null && sparkApplications.length > 0) {
+            if (sparkApplications.length > 0) {
                 solvedApplications = new SparkApplication[sparkApplications.length];
 
                 for (int index = 0; index < sparkApplications.length; index++) {

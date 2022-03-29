@@ -115,7 +115,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             connector = SocketConnectorFactory.createSecureSocketConnector(server, host, port, sslStores, trustForwardHeaders);
         }
 
-        Connector previousConnectors[] = server.getConnectors();
+        Connector[] previousConnectors = server.getConnectors();
         server = connector.getServer();
         if (previousConnectors.length != 0) {
             server.setConnectors(previousConnectors);
@@ -135,12 +135,10 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             handlersInList.add(handler);
 
             // WebSocket handler must be the last one
-            if (webSocketServletContextHandler != null) {
-                handlersInList.add(webSocketServletContextHandler);
-            }
+            handlersInList.add(webSocketServletContextHandler);
 
             HandlerList handlers = new HandlerList();
-            handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
+            handlers.setHandlers(handlersInList.toArray(new Handler[0]));
             server.setHandler(handlers);
         }
 

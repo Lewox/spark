@@ -49,7 +49,7 @@ public interface EmbeddedServer {
     /**
      * Must be called before ignite()
      *
-     * Must be it's own default method to maintain backwards compatibility. Move to ignite method in 3.0.
+     * Must be its own default method to maintain backwards compatibility. Move to ignite method in 3.0.
      */
     default void trustForwardHeaders(boolean trust) {
 

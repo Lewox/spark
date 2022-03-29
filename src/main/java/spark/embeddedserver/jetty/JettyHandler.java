@@ -33,7 +33,7 @@ import org.eclipse.jetty.server.session.SessionHandler;
  */
 public class JettyHandler extends SessionHandler {
 
-    private Filter filter;
+    private final Filter filter;
 
     public JettyHandler(Filter filter) {
         this.filter = filter;

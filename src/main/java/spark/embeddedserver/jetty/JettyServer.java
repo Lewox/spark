@@ -33,15 +33,15 @@ class JettyServer implements JettyServerFactory {
      * @param threadTimeoutMillis threadTimeoutMillis
      * @return a new jetty server instance
      */
+    @Override
     public Server create(int maxThreads, int minThreads, int threadTimeoutMillis) {
         Server server;
 
         if (maxThreads > 0) {
-            int max = maxThreads;
             int min = (minThreads > 0) ? minThreads : 8;
             int idleTimeout = (threadTimeoutMillis > 0) ? threadTimeoutMillis : 60000;
 
-            server = new Server(new QueuedThreadPool(max, min, idleTimeout));
+            server = new Server(new QueuedThreadPool(maxThreads, min, idleTimeout));
         } else {
             server = new Server();
         }

@@ -30,9 +30,9 @@ public class MimeParse {
 
         @Override
         public String toString() {
-            StringBuffer s = new StringBuffer("('" + type + "', '" + subType + "', {");
+            StringBuilder s = new StringBuilder("('" + type + "', '" + subType + "', {");
             for (String k : params.keySet()) {
-                s.append("'" + k + "':'" + params.get(k) + "',");
+                s.append("'").append(k).append("':'").append(params.get(k)).append("',");
             }
             return s.append("})").toString();
         }
@@ -112,6 +112,7 @@ public class MimeParse {
             this.quality = quality;
         }
 
+        @Override
         public int compareTo(FitnessAndQuality o) {
             if (fitness == o.fitness) {
                 if (quality == o.quality) {

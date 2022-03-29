@@ -59,7 +59,7 @@ public abstract class StringUtils {
             return true;
         }
         for (int i = 0; i < strLen; i++) {
-            if (Character.isWhitespace(cs.charAt(i)) == false) {
+            if (!Character.isWhitespace(cs.charAt(i))) {
                 return false;
             }
         }
@@ -85,16 +85,6 @@ public abstract class StringUtils {
      */
     public static boolean isEmpty(Object str) {
         return (str == null || "".equals(str));
-    }
-
-    /**
-     * Checks if the given String is not empty
-     *
-     * @param str the candidate String
-     * @return if the String is not empty
-     */
-    public static boolean isNotEmpty(String str) {
-        return !isEmpty(str);
     }
 
     /**
@@ -138,7 +128,7 @@ public abstract class StringUtils {
         // the index of an occurrence we've found, or -1
         int patLen = oldPattern.length();
         while (index >= 0) {
-            sb.append(inString.substring(pos, index));
+            sb.append(inString, pos, index);
             sb.append(newPattern);
             pos = index + patLen;
             index = inString.indexOf(oldPattern, pos);
@@ -278,12 +268,12 @@ public abstract class StringUtils {
         if (collection == null) {
             return null;
         }
-        return collection.toArray(new String[collection.size()]);
+        return collection.toArray(new String[0]);
     }
 
     /**
      * Take a String which is a delimited list and convert it to a String array.
-     * <p>A single delimiter can consists of more than one character: It will still
+     * <p>A single delimiter can consist of more than one character: It will still
      * be considered as single delimiter string, rather than as bunch of potential
      * delimiter characters - in contrast to {@code tokenizeToStringArray}.
      *
@@ -298,7 +288,7 @@ public abstract class StringUtils {
 
     /**
      * Take a String which is a delimited list and convert it to a String array.
-     * <p>A single delimiter can consists of more than one character: It will still
+     * <p>A single delimiter can consist of more than one character: It will still
      * be considered as single delimiter string, rather than as bunch of potential
      * delimiter characters - in contrast to {@code tokenizeToStringArray}.
      *

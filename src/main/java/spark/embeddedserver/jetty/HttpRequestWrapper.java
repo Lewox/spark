@@ -74,7 +74,7 @@ public class HttpRequestWrapper extends HttpServletRequestWrapper {
     }
 
     private class CachedServletInputStream extends ServletInputStream {
-        private ByteArrayInputStream byteArrayInputStream;
+        private final ByteArrayInputStream byteArrayInputStream;
 
         public CachedServletInputStream() {
             byteArrayInputStream = new ByteArrayInputStream(cachedBytes);

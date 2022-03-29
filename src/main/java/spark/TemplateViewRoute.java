@@ -20,7 +20,7 @@ package spark;
 /**
  * A TemplateViewRoute is built up by a path.
  * TemplateViewRoute instead of returning the result of calling toString() as body, it returns the result of calling render method.
- * The primary purpose is provide a way to create generic and reusable components for rendering output using a Template Engine.
+ * The primary purpose is to provide a way to create generic and reusable components for rendering output using a Template Engine.
  * For example to render objects to html by using Freemarker template engine..
  *
  * @author alex
