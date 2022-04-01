@@ -1,20 +1,20 @@
 package spark;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static spark.Service.ignite;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class InitExceptionHandlerTest {
 
-    private static int NON_VALID_PORT = Integer.MAX_VALUE;
+    private static final int NON_VALID_PORT = Integer.MAX_VALUE;
     private static Service service;
     private static String errorMessage = "";
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
+    @BeforeAll
+    public static void setUpClass() {
         service = ignite();
         service.port(NON_VALID_PORT);
         service.initExceptionHandler((e) -> errorMessage = "Custom init error");
@@ -23,11 +23,11 @@ public class InitExceptionHandlerTest {
     }
 
     @Test
-    public void testInitExceptionHandler() throws Exception {
-        Assert.assertEquals("Custom init error", errorMessage);
+    public void testInitExceptionHandler() {
+        assertEquals("Custom init error", errorMessage);
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         service.stop();
     }

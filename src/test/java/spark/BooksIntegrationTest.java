@@ -1,59 +1,52 @@
 package spark;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spark.Spark.after;
 import static spark.Spark.before;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import spark.examples.books.Books;
 import spark.utils.IOUtils;
 
 public class BooksIntegrationTest {
 
-    private static int PORT = 4567;
+    private static final int PORT = 4567;
 
-    private static String AUTHOR = "FOO";
-    private static String TITLE = "BAR";
-    private static String NEW_TITLE = "SPARK";
+    private static final String AUTHOR = "FOO";
+    private static final String TITLE = "BAR";
+    private static final String NEW_TITLE = "SPARK";
 
     private String bookId;
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() {
         Spark.stop();
     }
 
-    @After
+    @AfterEach
     public void clearBooks() {
         Books.books.clear();
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
-        before((request, response) -> {
-            response.header("FOZ", "BAZ");
-        });
+        before((request, response) -> response.header("FOZ", "BAZ"));
 
         Books.main(null);
 
-        after((request, response) -> {
-            response.header("FOO", "BAR");
-        });
+        after((request, response) -> response.header("FOO", "BAR"));
 
         Spark.awaitInitialization();
     }
@@ -64,7 +57,7 @@ public class BooksIntegrationTest {
 
         assertNotNull(response);
         assertNotNull(response.body);
-        assertTrue(Integer.valueOf(response.body) > 0);
+        assertTrue(Integer.parseInt(response.body) > 0);
         assertEquals(201, response.status);
     }
 
@@ -72,12 +65,12 @@ public class BooksIntegrationTest {
     public void canListBooks() {
         bookId = createBookViaPOST().body.trim();
 
-        UrlResponse response = doMethod("GET", "/books", null);
+        UrlResponse response = doMethod("GET", "/books");
 
         assertNotNull(response);
         String body = response.body.trim();
         assertNotNull(body);
-        assertTrue(Integer.valueOf(body) > 0);
+        assertTrue(Integer.parseInt(body) > 0);
         assertEquals(200, response.status);
         assertTrue(response.body.contains(bookId));
     }
@@ -86,7 +79,7 @@ public class BooksIntegrationTest {
     public void canGetBook() {
         bookId = createBookViaPOST().body.trim();
 
-        UrlResponse response = doMethod("GET", "/books/" + bookId, null);
+        UrlResponse response = doMethod("GET", "/books/" + bookId);
 
         String result = response.body;
         assertNotNull(response);
@@ -117,7 +110,7 @@ public class BooksIntegrationTest {
         bookId = createBookViaPOST().body.trim();
         updateBook();
 
-        UrlResponse response = doMethod("GET", "/books/" + bookId, null);
+        UrlResponse response = doMethod("GET", "/books/" + bookId);
 
         String result = response.body;
         assertNotNull(response);
@@ -131,7 +124,7 @@ public class BooksIntegrationTest {
     public void canDeleteBook() {
         bookId = createBookViaPOST().body.trim();
 
-        UrlResponse response = doMethod("DELETE", "/books/" + bookId, null);
+        UrlResponse response = doMethod("DELETE", "/books/" + bookId);
 
         String result = response.body;
         assertNotNull(response);
@@ -141,31 +134,27 @@ public class BooksIntegrationTest {
         assertTrue(result.contains("deleted"));
     }
 
-    @Test(expected = FileNotFoundException.class)
-    public void wontFindBook() throws IOException {
-        getResponse("GET", "/books/" + bookId, null);
+    @Test
+    public void wontFindBook() {
+        assertThrows(FileNotFoundException.class, () -> getResponse("GET", "/books/" + bookId, null));
     }
 
-    private static UrlResponse doMethod(String requestMethod, String path, String body) {
+    private static UrlResponse doMethod(String requestMethod, String path) {
         UrlResponse response = new UrlResponse();
-
         try {
             getResponse(requestMethod, path, response);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return response;
     }
 
-    private static void getResponse(String requestMethod, String path, UrlResponse response)
-            throws MalformedURLException, IOException, ProtocolException {
+    private static void getResponse(String requestMethod, String path, UrlResponse response) throws IOException {
         URL url = new URL("http://localhost:" + PORT + path);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod(requestMethod);
         connection.connect();
-        String res = IOUtils.toString(connection.getInputStream());
-        response.body = res;
+        response.body = IOUtils.toString(connection.getInputStream());
         response.status = connection.getResponseCode();
         response.headers = connection.getHeaderFields();
     }
@@ -177,11 +166,11 @@ public class BooksIntegrationTest {
     }
 
     private UrlResponse createBookViaPOST() {
-        return doMethod("POST", "/books?author=" + AUTHOR + "&title=" + TITLE, null);
+        return doMethod("POST", "/books?author=" + AUTHOR + "&title=" + TITLE);
     }
 
     private UrlResponse updateBook() {
-        return doMethod("PUT", "/books/" + bookId + "?title=" + NEW_TITLE, null);
+        return doMethod("PUT", "/books/" + bookId + "?title=" + NEW_TITLE);
     }
 
     private boolean afterFilterIsSet(UrlResponse response) {

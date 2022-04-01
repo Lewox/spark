@@ -3,82 +3,75 @@ package spark;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
-
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServers;
 import spark.route.Routes;
 import spark.ssl.SslStores;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static spark.Service.ignite;
 
 public class ServiceTest {
 
     private static final String IP_ADDRESS = "127.0.0.1";
+    private static final int PORT = 8080;
     private static final int NOT_FOUND_STATUS_CODE = HttpServletResponse.SC_NOT_FOUND;
 
     private Service service;
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
-    @Before
+    @BeforeEach
     public void test() {
         service = ignite();
     }
 
     @Test
     public void testEmbeddedServerIdentifier_defaultAndSet() {
-        assertEquals("Should return defaultIdentifier()",
-            EmbeddedServers.defaultIdentifier(),
-            service.embeddedServerIdentifier());
+        assertEquals(EmbeddedServers.defaultIdentifier(), service.embeddedServerIdentifier(), "Should return defaultIdentifier()");
 
         Object obj = new Object();
 
         service.embeddedServerIdentifier(obj);
 
-        assertEquals("Should return expected obj",
-            obj,
-            service.embeddedServerIdentifier());
+        assertEquals(obj, service.embeddedServerIdentifier(), "Should return expected obj");
     }
 
     @Test
     public void testEmbeddedServerIdentifier_thenThrowIllegalStateException() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("This must be done before route mapping has begun");
-
         Object obj = new Object();
 
         Whitebox.setInternalState(service, "initialized", true);
-        service.embeddedServerIdentifier(obj);
+        
+        final IllegalStateException ex = assertThrows(IllegalStateException.class, () -> service.embeddedServerIdentifier(obj));
+        assertEquals("This must be done before route mapping has begun", ex.getMessage());
     }
 
-    @Test(expected = HaltException.class)
+    @Test
     public void testHalt_whenOutParameters_thenThrowHaltException() {
-        service.halt();
+        assertThrows(HaltException.class, () -> service.halt());
     }
 
-    @Test(expected = HaltException.class)
+    @Test
     public void testHalt_whenStatusCode_thenThrowHaltException() {
-        service.halt(NOT_FOUND_STATUS_CODE);
+        assertThrows(HaltException.class, () -> service.halt(NOT_FOUND_STATUS_CODE));
     }
 
-    @Test(expected = HaltException.class)
+    @Test
     public void testHalt_whenBodyContent_thenThrowHaltException() {
-        service.halt("error");
+        assertThrows(HaltException.class, () -> service.halt("error"));
     }
 
-    @Test(expected = HaltException.class)
+    @Test
     public void testHalt_whenStatusCodeAndBodyContent_thenThrowHaltException() {
-        service.halt(NOT_FOUND_STATUS_CODE, "error");
+        assertThrows(HaltException.class, () -> service.halt(NOT_FOUND_STATUS_CODE, "error"));
     }
 
     @Test
@@ -86,16 +79,15 @@ public class ServiceTest {
         service.ipAddress(IP_ADDRESS);
 
         String ipAddress = Whitebox.getInternalState(service, "ipAddress");
-        assertEquals("IP address should be set to the IP address that was specified", IP_ADDRESS, ipAddress);
+        assertEquals(IP_ADDRESS, ipAddress, "IP address should be set to the IP address that was specified");
     }
 
     @Test
     public void testIpAddress_whenInitializedTrue_thenThrowIllegalStateException() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("This must be done before route mapping has begun");
-
         Whitebox.setInternalState(service, "initialized", true);
-        service.ipAddress(IP_ADDRESS);
+        
+        final IllegalStateException ex = assertThrows(IllegalStateException.class, () -> service.ipAddress(IP_ADDRESS));
+        assertEquals("This must be done before route mapping has begun", ex.getMessage());
     }
 
     @Test
@@ -103,70 +95,65 @@ public class ServiceTest {
         service.ipAddress(IP_ADDRESS);
 
         String ipAddress = Whitebox.getInternalState(service, "ipAddress");
-        assertEquals("IP address should be set to the IP address that was specified", IP_ADDRESS, ipAddress);
+        assertEquals(IP_ADDRESS, ipAddress, "IP address should be set to the IP address that was specified");
     }
 
     @Test
     public void testSetIpAddress_whenInitializedTrue_thenThrowIllegalStateException() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("This must be done before route mapping has begun");
-
         Whitebox.setInternalState(service, "initialized", true);
-        service.ipAddress(IP_ADDRESS);
+        
+        final IllegalStateException ex = assertThrows(IllegalStateException.class, () -> service.ipAddress(IP_ADDRESS));
+        assertEquals("This must be done before route mapping has begun", ex.getMessage());
     }
 
     @Test
     public void testPort_whenInitializedFalse() {
-        service.port(8080);
+        service.port(PORT);
 
         int port = Whitebox.getInternalState(service, "port");
-        assertEquals("Port should be set to the Port that was specified", 8080, port);
+        assertEquals(PORT, port, "Port should be set to the Port that was specified");
     }
 
     @Test
     public void testPort_whenInitializedTrue_thenThrowIllegalStateException() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("This must be done before route mapping has begun");
-
         Whitebox.setInternalState(service, "initialized", true);
-        service.port(8080);
+        
+        final IllegalStateException ex = assertThrows(IllegalStateException.class, () -> service.port(PORT));
+        assertEquals("This must be done before route mapping has begun", ex.getMessage());
     }
 
     @Test
     public void testSetPort_whenInitializedFalse() {
-        service.port(8080);
+        service.port(PORT);
 
         int port = Whitebox.getInternalState(service, "port");
-        assertEquals("Port should be set to the Port that was specified", 8080, port);
+        assertEquals(PORT, port, "Port should be set to the Port that was specified");
     }
 
     @Test
     public void testSetPort_whenInitializedTrue_thenThrowIllegalStateException() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("This must be done before route mapping has begun");
-
         Whitebox.setInternalState(service, "initialized", true);
-        service.port(8080);
+        
+        final IllegalStateException ex = assertThrows(IllegalStateException.class, () -> service.port(PORT));
+        assertEquals("This must be done before route mapping has begun", ex.getMessage());
     }
 
     @Test
     public void testGetPort_whenInitializedFalse_thenThrowIllegalStateException() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("This must be done after route mapping has begun");
-
         Whitebox.setInternalState(service, "initialized", false);
-        service.port();
+        
+        final IllegalStateException ex = assertThrows(IllegalStateException.class, () -> service.port());
+        assertEquals("This must be done after route mapping has begun", ex.getMessage());
     }
 
     @Test
     public void testGetPort_whenInitializedTrue() {
-        int expectedPort = 8080;
         Whitebox.setInternalState(service, "initialized", true);
-        Whitebox.setInternalState(service, "port", expectedPort);
+        Whitebox.setInternalState(service, "port", PORT);
 
         int actualPort = service.port();
 
-        assertEquals("Port retrieved should be the port setted", expectedPort, actualPort);
+        assertEquals(PORT, actualPort, "Port retrieved should be the port setted");
     }
 
     @Test
@@ -176,7 +163,7 @@ public class ServiceTest {
 
         int actualPort = service.port();
 
-        assertEquals("Port retrieved should be the port setted", expectedPort, actualPort);
+        assertEquals(expectedPort, actualPort, "Port retrieved should be the port setted");
     }
 
     @Test
@@ -185,9 +172,9 @@ public class ServiceTest {
         int maxThreads = Whitebox.getInternalState(service, "maxThreads");
         int minThreads = Whitebox.getInternalState(service, "minThreads");
         int threadIdleTimeoutMillis = Whitebox.getInternalState(service, "threadIdleTimeoutMillis");
-        assertEquals("Should return maxThreads specified", 100, maxThreads);
-        assertEquals("Should return minThreads specified", -1, minThreads);
-        assertEquals("Should return threadIdleTimeoutMillis specified", -1, threadIdleTimeoutMillis);
+        assertEquals(100, maxThreads, "Should return maxThreads specified");
+        assertEquals(-1, minThreads, "Should return minThreads specified");
+        assertEquals(-1, threadIdleTimeoutMillis, "Should return threadIdleTimeoutMillis specified");
     }
 
     @Test
@@ -196,81 +183,74 @@ public class ServiceTest {
         int maxThreads = Whitebox.getInternalState(service, "maxThreads");
         int minThreads = Whitebox.getInternalState(service, "minThreads");
         int threadIdleTimeoutMillis = Whitebox.getInternalState(service, "threadIdleTimeoutMillis");
-        assertEquals("Should return maxThreads specified", 100, maxThreads);
-        assertEquals("Should return minThreads specified", 50, minThreads);
-        assertEquals("Should return threadIdleTimeoutMillis specified", 75, threadIdleTimeoutMillis);
+        assertEquals(100, maxThreads, "Should return maxThreads specified");
+        assertEquals(50, minThreads, "Should return minThreads specified");
+        assertEquals(75, threadIdleTimeoutMillis, "Should return threadIdleTimeoutMillis specified");
     }
 
     @Test
     public void testThreadPool_whenMaxMinAndTimeoutParameters_thenThrowIllegalStateException() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("This must be done before route mapping has begun");
-
         Whitebox.setInternalState(service, "initialized", true);
-        service.threadPool(100, 50, 75);
+        
+        final IllegalStateException ex = assertThrows(IllegalStateException.class, () -> service.threadPool(100, 50, 75));
+        assertEquals("This must be done before route mapping has begun", ex.getMessage());
     }
 
     @Test
     public void testSecure_thenReturnNewSslStores() {
         service.secure("keyfile", "keypassword", "truststorefile", "truststorepassword");
         SslStores sslStores = Whitebox.getInternalState(service, "sslStores");
-        assertNotNull("Should return a SslStores because we configured it to have one", sslStores);
-        assertEquals("Should return keystoreFile from SslStores", "keyfile", sslStores.keystoreFile());
-        assertEquals("Should return keystorePassword from SslStores", "keypassword", sslStores.keystorePassword());
-        assertEquals("Should return trustStoreFile from SslStores", "truststorefile", sslStores.trustStoreFile());
-        assertEquals("Should return trustStorePassword from SslStores", "truststorepassword", sslStores.trustStorePassword());
+        assertNotNull(sslStores, "Should return a SslStores because we configured it to have one");
+        assertEquals("keyfile", sslStores.keystoreFile(), "Should return keystoreFile from SslStores");
+        assertEquals("keypassword", sslStores.keystorePassword(), "Should return keystorePassword from SslStores");
+        assertEquals("truststorefile", sslStores.trustStoreFile(), "Should return trustStoreFile from SslStores");
+        assertEquals("truststorepassword", sslStores.trustStorePassword(), "Should return trustStorePassword from SslStores");
     }
 
     @Test
     public void testSecure_whenInitializedTrue_thenThrowIllegalStateException() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("This must be done before route mapping has begun");
-
         Whitebox.setInternalState(service, "initialized", true);
-        service.secure(null, null, null, null);
+        
+        final IllegalStateException ex = assertThrows(IllegalStateException.class, () -> service.secure(null, null, null, null));
+        assertEquals("This must be done before route mapping has begun", ex.getMessage());
     }
 
     @Test
     public void testSecure_whenInitializedFalse_thenThrowIllegalArgumentException() {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("Must provide a keystore file to run secured");
-
-        service.secure(null, null, null, null);
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> service.secure(null, null, null, null));
+        assertEquals("Must provide a keystore file to run secured", ex.getMessage());
     }
 
     @Test
     public void testWebSocketIdleTimeoutMillis_whenInitializedTrue_thenThrowIllegalStateException() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("This must be done before route mapping has begun");
-
         Whitebox.setInternalState(service, "initialized", true);
-        service.webSocketIdleTimeoutMillis(100);
+        
+        final IllegalStateException ex = assertThrows(IllegalStateException.class, () -> service.webSocketIdleTimeoutMillis(100));
+        assertEquals("This must be done before route mapping has begun", ex.getMessage());
     }
 
     @Test
     public void testWebSocket_whenInitializedTrue_thenThrowIllegalStateException() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("This must be done before route mapping has begun");
-
         Whitebox.setInternalState(service, "initialized", true);
-        service.webSocket("/", DummyWebSocketListener.class);
+        
+        final IllegalStateException ex = assertThrows(IllegalStateException.class, () -> service.webSocket("/", DummyWebSocketListener.class));
+        assertEquals("This must be done before route mapping has begun", ex.getMessage());
     }
     
     @Test
     public void testWebSocket_whenPathNull_thenThrowNullPointerException() {
-        thrown.expect(NullPointerException.class);
-        thrown.expectMessage("WebSocket path cannot be null");
-        service.webSocket(null, new DummyWebSocketListener());
+        final NullPointerException ex = assertThrows(NullPointerException.class, () -> service.webSocket(null, new DummyWebSocketListener()));
+        assertEquals("WebSocket path cannot be null", ex.getMessage());
     }
     
     @Test
     public void testWebSocket_whenHandlerNull_thenThrowNullPointerException() {
-        thrown.expect(NullPointerException.class);
-        thrown.expectMessage("WebSocket handler class cannot be null");
-        service.webSocket("/", null);
+        final NullPointerException ex = assertThrows(NullPointerException.class, () -> service.webSocket("/", null));
+        assertEquals("WebSocket handler class cannot be null", ex.getMessage());
     }
     
-    @Test(timeout = 300)
+    @Test
+    @Timeout(value = 300, unit = MILLISECONDS)
     public void stopExtinguishesServer() {
         Service service = Service.ignite();
         Routes routes = Mockito.mock(Routes.class);

@@ -1,15 +1,14 @@
 package spark.embeddedserver.jetty.websocket;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import spark.embeddedserver.jetty.websocket.WebSocketCreatorFactory.SparkWebSocketCreator;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class WebSocketCreatorFactoryTest {
 
@@ -18,12 +17,12 @@ public class WebSocketCreatorFactoryTest {
         WebSocketCreator annotated =
                 WebSocketCreatorFactory.create(new WebSocketHandlerClassWrapper(AnnotatedHandler.class));
         assertTrue(annotated instanceof SparkWebSocketCreator);
-        assertTrue(SparkWebSocketCreator.class.cast(annotated).getHandler() instanceof AnnotatedHandler);
+        assertTrue(((SparkWebSocketCreator) annotated).getHandler() instanceof AnnotatedHandler);
 
         WebSocketCreator listener =
                 WebSocketCreatorFactory.create(new WebSocketHandlerClassWrapper(ListenerHandler.class));
         assertTrue(listener instanceof SparkWebSocketCreator);
-        assertTrue(SparkWebSocketCreator.class.cast(listener).getHandler() instanceof ListenerHandler);
+        assertTrue(((SparkWebSocketCreator) listener).getHandler() instanceof ListenerHandler);
     }
 
     @Test
@@ -39,7 +38,7 @@ public class WebSocketCreatorFactoryTest {
     }
 
     @Test
-    public void testCreate_whenInstantiationException() throws Exception {
+    public void testCreate_whenInstantiationException() {
         try {
             WebSocketCreatorFactory.create(new WebSocketHandlerClassWrapper(FailingHandler.class));
             fail("Handler creation should have thrown a RunTimeException");
