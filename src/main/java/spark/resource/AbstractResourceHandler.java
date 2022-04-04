@@ -23,7 +23,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Abstract class providing functionality for finding resources based on an Http Servlet request.
+ * Abstract class providing functionality for finding resources based on a Http Servlet request.
  * Code snippets copied from Eclipse Jetty source. Modifications made by Per Wendel.
  */
 public abstract class AbstractResourceHandler {

@@ -1,8 +1,7 @@
 package spark.embeddedserver;
 
 import java.io.File;
-
-import org.eclipse.jetty.server.NCSARequestLog;
+import org.eclipse.jetty.server.CustomRequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.junit.jupiter.api.AfterAll;
@@ -12,6 +11,7 @@ import spark.Spark;
 import spark.embeddedserver.jetty.EmbeddedJettyFactory;
 import spark.embeddedserver.jetty.JettyServerFactory;
 
+import static org.eclipse.jetty.server.CustomRequestLog.EXTENDED_NCSA_FORMAT;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -25,7 +25,7 @@ public class EmbeddedServersTest {
         // Create custom Server
         Server server = new Server();
         File requestLogFile = new File(requestLogDir, "request.log");
-        server.setRequestLog(new NCSARequestLog(requestLogFile.getAbsolutePath()));
+        server.setRequestLog(new CustomRequestLog(requestLogFile.getAbsolutePath(), EXTENDED_NCSA_FORMAT));
         JettyServerFactory serverFactory = mock(JettyServerFactory.class);
         when(serverFactory.create(0, 0, 0)).thenReturn(server);
 
@@ -52,7 +52,7 @@ public class EmbeddedServersTest {
             @Override
             public Server create(int maxThreads, int minThreads, int threadTimeoutMillis) {
                 Server server = new Server();
-                server.setRequestLog(new NCSARequestLog(requestLogFile.getAbsolutePath()));
+                server.setRequestLog(new CustomRequestLog(requestLogFile.getAbsolutePath(), EXTENDED_NCSA_FORMAT));
                 return server;
             }
 

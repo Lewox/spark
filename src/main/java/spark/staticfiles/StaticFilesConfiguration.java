@@ -54,7 +54,7 @@ public class StaticFilesConfiguration {
 
     public static StaticFilesConfiguration servletInstance = new StaticFilesConfiguration();
 
-    private Map<String, String> customHeaders = new HashMap<>();
+    private final Map<String, String> customHeaders = new HashMap<>();
 
     /**
      * Attempt consuming using either static resource handlers or jar resource handlers

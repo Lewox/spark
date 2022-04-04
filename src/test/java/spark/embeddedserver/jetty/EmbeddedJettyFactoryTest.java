@@ -91,7 +91,7 @@ public class EmbeddedJettyFactoryTest {
         when(jettyServerFactory.create(100, 10, 10000)).thenReturn(server);
 
         final EmbeddedJettyFactory embeddedJettyFactory = new EmbeddedJettyFactory(jettyServerFactory).withHttpOnly(false);
-        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, false);
+        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, ExceptionMapper.getServletInstance(), false);
         embeddedServer.trustForwardHeaders(true);
         embeddedServer.ignite("localhost", 6759, null, 100, 10, 10000);
 

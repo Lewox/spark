@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,25 +57,25 @@ public final class Service extends Routable {
     private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
 
     public static final int SPARK_DEFAULT_PORT = 4567;
-    protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
+    static final String DEFAULT_ACCEPT_TYPE = "*/*";
 
     protected boolean initialized = false;
 
-    protected int port = SPARK_DEFAULT_PORT;
-    protected String ipAddress = "0.0.0.0";
+    private int port = SPARK_DEFAULT_PORT;
+    private String ipAddress = "0.0.0.0";
 
-    protected SslStores sslStores;
+    private SslStores sslStores;
 
-    protected Map<String, WebSocketHandlerWrapper> webSocketHandlers = null;
+    private Map<String, WebSocketHandlerWrapper> webSocketHandlers = null;
 
-    protected int maxThreads = -1;
-    protected int minThreads = -1;
-    protected int threadIdleTimeoutMillis = -1;
-    protected Optional<Long> webSocketIdleTimeoutMillis = Optional.empty();
+    private int maxThreads = -1;
+    private int minThreads = -1;
+    private int threadIdleTimeoutMillis = -1;
+    private Optional<Long> webSocketIdleTimeoutMillis = Optional.empty();
 
-    protected EmbeddedServer server;
-    protected Deque<String> pathDeque = new ArrayDeque<>();
-    protected Routes routes;
+    EmbeddedServer server;
+    private final Deque<String> pathDeque = new ArrayDeque<>();
+    Routes routes;
 
     private CountDownLatch initLatch = new CountDownLatch(1);
     private CountDownLatch stopLatch = new CountDownLatch(0);
@@ -159,7 +158,7 @@ public final class Service extends Routable {
     /**
      * Set the port that Spark should listen on. If not called the default port
      * is 4567. This has to be called before any route mapping is done.
-     * If provided port = 0 then the an arbitrary available port will be used.
+     * If provided port = 0 then an arbitrary available port will be used.
      *
      * @param port The port number
      * @return the object with port set
@@ -572,7 +571,7 @@ public final class Service extends Routable {
     }
 
     public String getPaths() {
-        return pathDeque.stream().collect(Collectors.joining(""));
+        return String.join("", pathDeque);
     }
     /**
      * @return all routes information from this service
@@ -683,7 +682,7 @@ public final class Service extends Routable {
      */
     public synchronized <T extends Exception> void exception(Class<T> exceptionClass, ExceptionHandler<? super T> handler) {
         // wrap
-        ExceptionHandlerImpl wrapper = new ExceptionHandlerImpl<T>(exceptionClass) {
+        ExceptionHandlerImpl<T> wrapper = new ExceptionHandlerImpl<T>(exceptionClass) {
             @Override
             public void handle(T exception, Request request, Response response) {
                 handler.handle(exception, request, response);

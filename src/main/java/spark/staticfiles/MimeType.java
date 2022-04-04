@@ -31,7 +31,7 @@ public class MimeType {
 
     private static volatile boolean guessingOn = true;
 
-    private static Map<String, String> mappings = new HashMap();
+    private static final Map<String, String> mappings = new HashMap<>();
 
     static {
         mappings.put("au", "audio/basic");
@@ -114,10 +114,6 @@ public class MimeType {
     protected static String getMimeType(String filename) {
         String fileExtension = filename.replaceAll("^.*\\.(.*)$", "$1");
         return mappings.getOrDefault(fileExtension, "application/octet-stream");
-    }
-
-    protected static String fromPathInfo(String pathInfo) {
-        return getMimeType(pathInfo);
     }
 
     protected static boolean shouldGuess() {

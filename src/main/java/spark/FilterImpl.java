@@ -30,7 +30,7 @@ public abstract class FilterImpl implements Filter, Wrapper {
     static final String DEFAULT_ACCEPT_TYPE = "*/*";
 
     private String path;
-    private String acceptType;
+    private final String acceptType;
     private Filter delegate;
 
     /**
@@ -91,6 +91,7 @@ public abstract class FilterImpl implements Filter, Wrapper {
      * @param request  The request object providing information about the HTTP request
      * @param response The response object providing functionality for modifying the response
      */
+    @Override
     public abstract void handle(Request request, Response response) throws Exception;
 
     public String getAcceptType() {

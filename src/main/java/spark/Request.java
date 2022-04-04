@@ -159,7 +159,7 @@ public class Request {
      * @return an array containing the splat (wildcard) parameters
      */
     public String[] splat() {
-        return splat.toArray(new String[splat.size()]);
+        return splat.toArray(new String[0]);
     }
 
     /**
@@ -397,7 +397,7 @@ public class Request {
      */
     public Set<String> attributes() {
         Set<String> attrList = new HashSet<>();
-        Enumeration<String> attributes = (Enumeration<String>) servletRequest.getAttributeNames();
+        Enumeration<String> attributes = servletRequest.getAttributeNames();
         while (attributes.hasMoreElements()) {
             attrList.add(attributes.nextElement());
         }
