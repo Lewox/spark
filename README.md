@@ -2,15 +2,15 @@
 [![](https://img.shields.io/github/license/perwendel/spark.svg)](./LICENSE)
 [![](https://img.shields.io/maven-central/v/com.sparkjava/spark-core.svg)](http://mvnrepository.com/artifact/com.sparkjava/spark-core)
 
-Spark - a tiny web framework for Java 8
+Spark - a tiny web framework for Java 11
 ==============================================
 
-**Spark 2.9.3 is out!!**  <a href="https://github.com/perwendel/spark/blob/master/changeset/2.9.3-changeset.md">Changeset</a> 
+**Spark 3.0.0 is out!!**  <a href="https://github.com/perwendel/spark/blob/master/changeset/3.0.0-changeset.md">Changeset</a> 
 ```xml
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.9.3</version>
+    <version>3.0.0</version>
 </dependency>
 ```
 
@@ -31,7 +31,7 @@ Getting started
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.9.2</version>
+    <version>3.0.0</version>
 </dependency>
 ```
 

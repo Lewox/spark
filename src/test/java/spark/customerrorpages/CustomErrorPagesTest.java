@@ -35,7 +35,7 @@ public class CustomErrorPagesTest {
         get("/hello", (q, a) -> HELLO_WORLD);
 
         get("/raiseinternal", (q, a) -> {
-            throw new Exception("");
+            throw new Exception("Expected test error");
         });
 
         notFound(CUSTOM_NOT_FOUND);

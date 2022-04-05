@@ -15,14 +15,14 @@
  */
 package spark.embeddedserver.jetty.websocket;
 
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
-import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
+import org.eclipse.jetty.websocket.server.JettyServerUpgradeRequest;
+import org.eclipse.jetty.websocket.server.JettyServerUpgradeResponse;
+import org.eclipse.jetty.websocket.server.JettyWebSocketCreator;
 
 import static java.util.Objects.requireNonNull;
 
 /**
- * Factory class to create {@link WebSocketCreator} implementations that
+ * Factory class to create {@link JettyWebSocketCreator} implementations that
  * delegate to the given handler class.
  *
  * @author Ignasi Barrera
@@ -30,18 +30,18 @@ import static java.util.Objects.requireNonNull;
 public class WebSocketCreatorFactory {
 
     /**
-     * Creates a {@link WebSocketCreator} that uses the given handler class/instance for
+     * Creates a {@link JettyWebSocketCreator} that uses the given handler class/instance for
      * the WebSocket connections.
      *
      * @param handlerWrapper The wrapped handler to use to manage WebSocket connections.
      * @return The WebSocketCreator.
      */
-    public static WebSocketCreator create(WebSocketHandlerWrapper handlerWrapper) {
+    public static JettyWebSocketCreator create(WebSocketHandlerWrapper handlerWrapper) {
         return new SparkWebSocketCreator(handlerWrapper.getHandler());
     }
 
     // Package protected to be visible to the unit tests
-    static class SparkWebSocketCreator implements WebSocketCreator {
+    static class SparkWebSocketCreator implements JettyWebSocketCreator {
         private final Object handler;
 
         private SparkWebSocketCreator(Object handler) {
@@ -49,8 +49,7 @@ public class WebSocketCreatorFactory {
         }
 
         @Override
-        public Object createWebSocket(ServletUpgradeRequest request,
-                                      ServletUpgradeResponse response) {
+        public Object createWebSocket(JettyServerUpgradeRequest req, JettyServerUpgradeResponse resp) {
             return handler;
         }
 
