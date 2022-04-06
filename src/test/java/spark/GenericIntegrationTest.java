@@ -182,7 +182,7 @@ public class GenericIntegrationTest {
         });
 
         get("/exception", (request, response) -> {
-            throw new RuntimeException();
+            throw new RuntimeException("Expected test error");
         });
 
         afterAfter("/exception", (request, response) -> response.body("done executed for exception"));

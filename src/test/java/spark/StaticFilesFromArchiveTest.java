@@ -20,9 +20,13 @@ import static java.lang.ClassLoader.getSystemClassLoader;
 import static java.lang.System.arraycopy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import io.github.classgraph.ClassGraph;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.LinkedList;
+import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -30,7 +34,7 @@ import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
 public class StaticFilesFromArchiveTest {
-
+    
     private static SparkTestUtil testUtil;
     private static ClassLoader classLoader;
     private static ClassLoader initialClassLoader;
@@ -57,15 +61,14 @@ public class StaticFilesFromArchiveTest {
         Thread.currentThread().setContextClassLoader(initialClassLoader);
     }
 
-    private static void setupClassLoader() {
-        ClassLoader extendedClassLoader = createExtendedClassLoader();
+    private static void setupClassLoader() throws ClassNotFoundException, NoSuchFieldException, SecurityException, NoSuchMethodException, MalformedURLException {
         initialClassLoader = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(extendedClassLoader);
-        classLoader = extendedClassLoader;
+        classLoader = createExtendedClassLoader();
+        Thread.currentThread().setContextClassLoader(classLoader);
     }
 
-    private static URLClassLoader createExtendedClassLoader() {
-        URL[] parentURLs = ((URLClassLoader) getSystemClassLoader()).getURLs();
+    private static URLClassLoader createExtendedClassLoader() throws ClassNotFoundException, NoSuchFieldException, SecurityException, NoSuchMethodException, MalformedURLException {
+        URL[] parentURLs = classLoaderUrls(getSystemClassLoader());
         URL[] urls = new URL[parentURLs.length + 1];
         arraycopy(parentURLs, 0, urls, 0, parentURLs.length);
 
@@ -85,5 +88,14 @@ public class StaticFilesFromArchiveTest {
 
         String body = response.body;
         assertEquals("Content of css file", body);
+    }
+    
+    private static URL[] classLoaderUrls(ClassLoader clsLdr)
+            throws ClassNotFoundException, NoSuchFieldException, SecurityException, NoSuchMethodException, MalformedURLException {
+        final List<URL> urls = new LinkedList<>();
+        for (URL dup : new ClassGraph().getClasspathURLs()) {
+            urls.add(dup);
+        }
+        return urls.toArray(new URL[0]);
     }
 }

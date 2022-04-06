@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
+import org.eclipse.jetty.websocket.server.JettyWebSocketCreator;
 import org.junit.jupiter.api.Test;
 import spark.embeddedserver.jetty.websocket.WebSocketCreatorFactory.SparkWebSocketCreator;
 
@@ -14,12 +14,12 @@ public class WebSocketCreatorFactoryTest {
 
     @Test
     public void testCreateWebSocketHandler() {
-        WebSocketCreator annotated =
+        JettyWebSocketCreator annotated =
                 WebSocketCreatorFactory.create(new WebSocketHandlerClassWrapper(AnnotatedHandler.class));
         assertTrue(annotated instanceof SparkWebSocketCreator);
         assertTrue(((SparkWebSocketCreator) annotated).getHandler() instanceof AnnotatedHandler);
 
-        WebSocketCreator listener =
+        JettyWebSocketCreator listener =
                 WebSocketCreatorFactory.create(new WebSocketHandlerClassWrapper(ListenerHandler.class));
         assertTrue(listener instanceof SparkWebSocketCreator);
         assertTrue(((SparkWebSocketCreator) listener).getHandler() instanceof ListenerHandler);
